@@ -134,11 +134,10 @@ def display_history():
         table.add_column("Sessions", justify="right")
         table.add_column("Δ Sess", justify="right")
 
-        prev_vals = {}
         totals = []
         inputs = []
         outputs = []
-        for entry in recent:
+        for i, entry in enumerate(recent):
             ts_str = entry.get("timestamp", "")
             dt = _parse_ts(ts_str)
             when = _relative_time(dt)
@@ -152,16 +151,15 @@ def display_history():
             inputs.append(inp)
             outputs.append(out)
 
-            key = editor_name
-            d_total = _fmt_delta(total, prev_vals.get((key, "total")))
-            d_input = _fmt_delta(inp, prev_vals.get((key, "input")))
-            d_output = _fmt_delta(out, prev_vals.get((key, "output")))
-            d_sess = _fmt_delta(sess, prev_vals.get((key, "sess")))
+            next_total = recent[i + 1].get("total_processed") if i + 1 < len(recent) else None
+            next_input = recent[i + 1].get("input") if i + 1 < len(recent) else None
+            next_output = recent[i + 1].get("output") if i + 1 < len(recent) else None
+            next_sess = recent[i + 1].get("total_sessions") if i + 1 < len(recent) else None
 
-            prev_vals[(key, "total")] = total
-            prev_vals[(key, "input")] = inp
-            prev_vals[(key, "output")] = out
-            prev_vals[(key, "sess")] = sess
+            d_total = _fmt_delta(total, next_total)
+            d_input = _fmt_delta(inp, next_input)
+            d_output = _fmt_delta(out, next_output)
+            d_sess = _fmt_delta(sess, next_sess)
 
             table.add_row(
                 when,
